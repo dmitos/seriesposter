@@ -14,9 +14,10 @@ echo "||      ||||||  ||||||   ||   ||||||  ||  ||v1\n";
 //por ejemplo /home/nombre/Videos/series tv #en linux
 echo "Ingresar direcotrio raiz donde se encuentran las SERIES: ";
 $directorio1 = trim(fgets(STDIN));
-
+if (is_dir($directorio1)){ //compruebo si es un directorio
 // obtengo el array con los directorios y sus nombres
 $arboldir  = scandir($directorio1);
+
 // elimino el primero y segundo array, por ser /. /..
 $i = 0;
 	while ($i < 2){
@@ -27,6 +28,8 @@ $i = 0;
 $arraydir = array_values($arboldir);
 $cantidad = count($arraydir);
 echo "se encontraron ".$cantidad." directorios\n";
+}else{ echo "No existe el directorio al cual quiere acceder\n";
+exit;}
 //------------------------------------------------------
 
 foreach($arraydir as $serie){
