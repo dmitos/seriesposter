@@ -34,42 +34,37 @@ foreach($arraydir as $serie){
 //$serie = trim(fgets(STDIN));
 
 //sustituyo los espacios en blanco o separadores con +
-$remplazar = array(" ","_","-");
-$buscado = str_replace($remplazar, "+",$serie);
-echo "Descargando caratula de ".$serie."\n";
+	$remplazar = array(" ","_","-");
+	$buscado = str_replace($remplazar, "+",$serie);
+	echo "Descargando caratula de ".$serie."\n";
 //path de donde descargo la busqueda con el dato
-$url = 'https://itunes.apple.com/search?term='.$buscado.'&entity=tvSeason';
+	$url = 'https://itunes.apple.com/search?term='.$buscado.'&entity=tvSeason';
 //para decodificar el archivo
-$ch = curl_init(); 
-	curl_setopt($ch, CURLOPT_URL, $url); 
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30); 
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	$json = curl_exec($ch); 
-	if ($errno = curl_errno($ch)) {
-	    echo json_encode(array('error' => "error en tomar base de itunes"));
-	    exit;
-	}
-	curl_close($ch);    
-	$obj = json_decode($json,TRUE);
+	$ch = curl_init(); 
+		curl_setopt($ch, CURLOPT_URL, $url); 
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30); 
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$json = curl_exec($ch); 
+		if ($errno = curl_errno($ch)) {
+		    echo json_encode(array('error' => "error en tomar base de itunes"));
+		    exit;
+		}
+		curl_close($ch);    
+		$obj = json_decode($json,TRUE);
 
-	foreach ($obj as $objeto) {
-    $imagen = $objeto[0]['artworkUrl100'];
+		foreach ($obj as $objeto) {
+			$imagen = $objeto[0]['artworkUrl100'];
 
-}
-$imagengrande = str_replace("100x100bb","300x300",$imagen);
+		}
+	$imagengrande = str_replace("100x100bb","300x300",$imagen);
 
 //-----------------------------------------------------------
 
-
-//path de donde esta la imagen a descargar
-//$url = 'http://is5.mzstatic.com/image/thumb/Music6/v4/db/07/8d/db078d84-847e-cb58-c9d5-740bec068ac9/source/250x250.jpg';
-//donde se va a descargar la imagen
 // cover.jpg es el nombre cuando se descarge
-$img = $directorio1."/".$serie."/cover.jpg";
+	$img = $directorio1."/".$serie."/cover.jpg";
 //la descarga se da aca
-file_put_contents($img, file_get_contents($imagengrande));
-
+	file_put_contents($img, file_get_contents($imagengrande));
 
 }
 ?>
