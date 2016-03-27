@@ -8,8 +8,8 @@ echo "||||||  ||||||  |||||| |||||| ||||||  ||||||\n";
 echo "||  ||  ||  ||  ||       ||   ||   |  ||  ||\n";
 echo "||||||  ||  ||  ||||||   ||   ||||    ||||||\n";
 echo "||      ||  ||      ||   ||   ||   |  || ||\n";
-echo "||      ||||||  ||||||   ||   ||||||  ||  ||v1\n";
-//-----------------------------------------------------
+echo "||      ||||||  ||||||   ||   ||||||  ||  ||v1.1\n";
+
 //pido que ingrese el directorio base
 //por ejemplo /home/nombre/Videos/series tv #en linux
 echo "Ingresar direcotrio raiz donde se encuentran las SERIES: ";
@@ -35,10 +35,18 @@ exit;}
 foreach($arraydir as $serie){
 //echo "serie: ";
 //$serie = trim(fgets(STDIN));
+//revisar si ya esta el cover proximamente---------------------
 
+$path = $directorio1."/".$serie."/cover.jpg";
+if (file_exists($path)){
+	echo "Existe el cover de ".$serie.", No se Descarga\n";
+}else{
 //sustituyo los espacios en blanco o separadores con +
 	$remplazar = array(" ","_","-");
 	$buscado = str_replace($remplazar, "+",$serie);
+
+
+
 	echo "Descargando caratula de ".$serie."\n";
 //path de donde descargo la busqueda con el dato
 	$url = 'https://itunes.apple.com/search?term='.$buscado.'&entity=tvSeason';
@@ -68,6 +76,6 @@ foreach($arraydir as $serie){
 	$img = $directorio1."/".$serie."/cover.jpg";
 //la descarga se da aca
 	file_put_contents($img, file_get_contents($imagengrande));
-
+}
 }
 ?>
