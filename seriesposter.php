@@ -9,7 +9,7 @@ echo "||  ||  ||  ||  ||       ||   ||   |  ||  ||\n";
 echo "||||||  ||  ||  ||||||   ||   ||||    ||||||\n";
 echo "||      ||  ||      ||   ||   ||   |  || ||\n";
 echo "||      ||||||  ||||||   ||   ||||||  ||  ||v1\n";
-
+//-----------------------------------------------------
 //pido que ingrese el directorio base
 //por ejemplo /home/nombre/Videos/series tv #en linux
 echo "Ingresar direcotrio raiz donde se encuentran las SERIES: ";
