@@ -13,7 +13,8 @@ echo "||      ||||||  ||||||   ||   ||||||  ||  ||v1.1\n";
 //pido que ingrese el directorio base
 //por ejemplo /home/nombre/Videos/series tv #en linux
 echo "Ingresar direcotrio raiz donde se encuentran las SERIES: ";
-$directorio1 = trim(fgets(STDIN));
+//$directorio1 = trim(fgets(STDIN));
+$directorio1="C:/xampp/htdocs/www/seriestv/tvseries";
 if (is_dir($directorio1)){ //compruebo si es un directorio
 // obtengo el array con los directorios y sus nombres
 $arboldir  = scandir($directorio1);
@@ -39,7 +40,7 @@ foreach($arraydir as $serie){
 
 $path = $directorio1."/".$serie."/cover.jpg";
 if (file_exists($path)){
-	echo "Existe el cover de ".$serie.", No se Descarga\n";
+	echo "Ex-iste el cover de ".$serie.", No se Descarga\n";
 }else{
 //sustituyo los espacios en blanco o separadores con +
 	$remplazar = array(" ","_","-");
@@ -50,15 +51,22 @@ if (file_exists($path)){
 	echo "Descargando caratula de ".$serie."\n";
 //path de donde descargo la busqueda con el dato
 	$url = 'https://itunes.apple.com/search?term='.$buscado.'&entity=tvSeason';
+	$config['useragent'] = 'Mozilla/5.0 (Windows NT 6.2; WOW64; rv:17.0) Gecko/20100101 Firefox/17.0';
 //para decodificar el archivo
 	$ch = curl_init(); 
+	curl_setopt($ch, CURLOPT_USERAGENT, $config['useragent']);
+
 		curl_setopt($ch, CURLOPT_URL, $url); 
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30); 
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0); 
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$json = curl_exec($ch); 
 		if ($errno = curl_errno($ch)) {
 		    echo json_encode(array('error' => "error en tomar base de itunes"));
+		    print_r(curl_error($ch));
 		    exit;
 		}
 		curl_close($ch);    
