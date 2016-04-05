@@ -34,7 +34,13 @@ echo "||      ||  ||      ||   ||   ||   |  || ||\n";
 echo "||      ||||||  ||||||   ||   ||||||  ||  ||v2\n";
 
 echo "Ingresar direcotrio raiz donde se encuentran las SERIES: ";
-$dir = trim(fgets(STDIN));
+$raiz = trim(fgets(STDIN));
+$ultima = substr($raiz, -1);
+if ( $ultima == '/') {
+	$dir = $raiz;
+}else{
+	$dir = $raiz.'/';
+}
 ## $dir = 'C:/xampp/htdocs/www/seriestv/tvseries/';
 
 function download($direccion,$descargado){
