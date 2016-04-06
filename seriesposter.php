@@ -31,7 +31,7 @@ echo "||||||  ||||||  |||||| |||||| ||||||  ||||||\n";
 echo "||  ||  ||  ||  ||       ||   ||   |  ||  ||\n";
 echo "||||||  ||  ||  ||||||   ||   ||||    ||||||\n";
 echo "||      ||  ||      ||   ||   ||   |  || ||\n";
-echo "||      ||||||  ||||||   ||   ||||||  ||  ||v2\n";
+echo "||      ||||||  ||||||   ||   ||||||  ||  ||v2.1\n";
 
 echo "Ingresar direcotrio raiz donde se encuentran las SERIES: ";
 $raiz = trim(fgets(STDIN));
@@ -42,6 +42,13 @@ if ( $ultima == '/') {
 	$dir = $raiz.'/';
 }
 ## $dir = 'C:/xampp/htdocs/www/seriestv/tvseries/';
+
+function nombreTemporada($nombre,$ser){
+	$t = strtolower($nombre);
+	$patronBorrar = array("season","temp","temporada"," ","_",$ser);
+	$nombreT = str_replace($patronBorrar,"",$t);
+	return $nombreT;
+}
 
 function download($direccion,$descargado){
 
@@ -55,7 +62,7 @@ function download($direccion,$descargado){
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0); 
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_NOPROGRESS, false);
+	curl_setopt($ch, CURLOPT_NOPROGRESS, true);
 
 	$json = curl_exec($ch);
 	if ($errno = curl_errno($ch)) {
@@ -64,7 +71,9 @@ function download($direccion,$descargado){
 	}
 	curl_close($ch);
 	$obj = json_decode($json, true);
-
+	if ($obj['resultCount']==0) {
+		echo "No se encuentra cover\n";
+	}else{
 	foreach ($obj as $objeto) {
 		$imagen = $objeto[0]['artworkUrl100'];
 	}
@@ -73,30 +82,35 @@ function download($direccion,$descargado){
 //la descarga se da aca
 	//echo "serie: ".$imagengrande."\n";
 	file_put_contents($img, file_get_contents($imagengrande));
+
+}
+	
+
 }
 
 
 function descargaCover($series,$temp,$paths){
 	$cambiosNombre = array('/','-','.','_',' ');
 	$buscado = str_replace($cambiosNombre, '+', $series);
-	if ($temp == 0) {
+	if (empty($temp)) {
 		$url = 'https://itunes.apple.com/search?term='.$buscado.'&entity=tvSeason';
 		if (file_exists($paths.$series.'/cover.jpg')) {
-			echo 'No se descarga el cover de '.$series." por ya existir \n";
+			echo 'Existe cover de: '.$series."\n";
 		}else{
 			
-			echo 'descargando '.$series."\n";
+			echo 'Descargando '.$series."\n";
 			$desc= $paths.$series;
 			download($url,$desc);
 
 		}
 	}else{
-		$url = 'https://itunes.apple.com/search?term='.$buscado.'+season+'.(int)$temp.'&entity=tvSeason';
+		$nombreT = nombretemporada($temp,$series);
+		$url = 'https://itunes.apple.com/search?term='.$buscado.'+season+'.(int)$nombreT.'&entity=tvSeason';
 		if (file_exists($paths.$series.'/'.$temp.'/cover.jpg')) {
-			echo "No se descarga el cover de la temporada ".$temp." de ".$series." por ya existir \n";
+			echo "Existe cover de Temporada ".$nombreT." de ".$series."\n";
 		}else{
 
-			echo "descargando temporada ".$temp." de ".$series."\n";
+			echo "Descargando Temporada ".$nombreT." de ".$series."\n";
 			$desc= $paths.$series."/".$temp;
 			download($url,$desc);
 		}
