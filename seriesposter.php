@@ -31,10 +31,13 @@ echo "||||||  ||||||  |||||| |||||| ||||||  ||||||\n";
 echo "||  ||  ||  ||  ||       ||   ||   |  ||  ||\n";
 echo "||||||  ||  ||  ||||||   ||   ||||    ||||||\n";
 echo "||      ||  ||      ||   ||   ||   |  || ||\n";
-echo "||      ||||||  ||||||   ||   ||||||  ||  ||v2.1\n";
+echo "||      ||||||  ||||||   ||   ||||||  ||  ||v2.1.1\n";
 
 echo "Ingresar direcotrio raiz donde se encuentran las SERIES: ";
 $raiz = trim(fgets(STDIN));
+if (empty($raiz)) {
+	exit;
+}
 $ultima = substr($raiz, -1);
 if ( $ultima == '/') {
 	$dir = $raiz;
@@ -51,7 +54,7 @@ function nombreTemporada($nombre,$ser){
 }
 
 function download($direccion,$descargado){
-
+	//echo "[";
 	$config['useragent'] = 'Mozilla/5.0 (Windows NT 6.2; WOW64; rv:17.0) Gecko/20100101 Firefox/17.0';
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_USERAGENT, $config['useragent']);
@@ -59,17 +62,20 @@ function download($direccion,$descargado){
 	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 	curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0); 
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, 'progreso');
 	curl_setopt($ch, CURLOPT_NOPROGRESS, true);
 
 	$json = curl_exec($ch);
 	if ($errno = curl_errno($ch)) {
-		echo json_encode(array('error'=>"volver a intentarlo \n"));
-		exit;
+		echo json_encode(array('error en la descarga, se continua'));
+		echo "\n";
+		return(0);
 	}
 	curl_close($ch);
+	//echo "] 100% \n";
 	$obj = json_decode($json, true);
 	if ($obj['resultCount']==0) {
 		echo "No se encuentra cover\n";
@@ -88,6 +94,16 @@ function download($direccion,$descargado){
 
 }
 
+function progreso($id, $download_size, $downloaded, $upload_size, $uploaded)
+{
+	if ($downloaded!=0) {
+		$porcentaje=($download_size/$downloaded);
+$por=intval($porcentaje/1024);
+		echo "\r".$por." Kb";
+	}
+
+}
+
 
 function descargaCover($series,$temp,$paths){
 	$cambiosNombre = array('/','-','.','_',' ');
@@ -95,10 +111,10 @@ function descargaCover($series,$temp,$paths){
 	if (empty($temp)) {
 		$url = 'https://itunes.apple.com/search?term='.$buscado.'&entity=tvSeason';
 		if (file_exists($paths.$series.'/cover.jpg')) {
-			echo 'Existe cover de: '.$series."\n";
+			echo "\nExiste cover de: ".$series."\n";
 		}else{
 			
-			echo 'Descargando '.$series."\n";
+			echo "\nDescargando ".$series."\n";
 			$desc= $paths.$series;
 			download($url,$desc);
 
@@ -107,10 +123,10 @@ function descargaCover($series,$temp,$paths){
 		$nombreT = nombretemporada($temp,$series);
 		$url = 'https://itunes.apple.com/search?term='.$buscado.'+season+'.(int)$nombreT.'&entity=tvSeason';
 		if (file_exists($paths.$series.'/'.$temp.'/cover.jpg')) {
-			echo "Existe cover de Temporada ".$nombreT." de ".$series."\n";
+			echo "\nExiste cover de Temporada ".$nombreT." de ".$series."\n";
 		}else{
 
-			echo "Descargando Temporada ".$nombreT." de ".$series."\n";
+			echo "\nDescargando Temporada ".$nombreT." de ".$series."\n";
 			$desc= $paths.$series."/".$temp;
 			download($url,$desc);
 		}
